@@ -1,0 +1,115 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+int a[10];
+int b[10];
+int c[5],d[5];
+int l=0,h=9,h1=4;
+void *func(void *a);
+void *func1(void *a);
+void merging(int l, int m, int h) {
+   int l1, l2, i;
+   for(l1 = l, l2 = m + 1, i = l; l1 <= m && l2 <= h; i++) {
+      if(a[l1] <= a[l2])
+         b[i] = a[l1++];
+      else
+         b[i] = a[l2++];
+   } 
+   while(l1 <= m)    
+      b[i++] = a[l1++];
+   while(l2 <= h)   
+      b[i++] = a[l2++];
+   for(i = l; i <= h; i++)
+      a[i] = b[i];
+}
+void mergesort(int l,int h) {
+   int m;
+   	int *elements = (int*)a;   	
+   if(l < h) {
+      m = (l + h) / 2;
+      mergesort(l, m);
+      mergesort(m+1, h);
+      merging(l, m, h);
+   } else { 
+      return;
+   }   
+}
+void merging1(int l, int m, int h1) {
+   int l1, l2, i;
+   for(l1 = l, l2 = m + 1, i = l; l1 <= m && l2 <= h1; i++) {
+      if(c[l1] <= c[l2])
+        d[i] = c[l1++];
+      else
+         d[i] = c[l2++];
+   }
+   while(l1 <= m)    
+      d[i++] = c[l1++];
+   while(l2 <= h1)   
+      d[i++] = c[l2++];
+   for(i = l; i <= h1; i++)
+     {
+	   c[i] = d[i];
+  }
+}
+void mergesort1(int l,int h1) {
+   int m;
+   	int *elements = (int*)c; 
+   if(l < h1) {
+      m = (l + h1) / 2;
+      mergesort1(l, m);
+      mergesort1(m+1, h1);
+      merging1(l, m, h1);
+   } else { 
+      return;
+   }   
+}
+int main()
+{
+	printf("***MultiThread Sorting***\n");
+	printf("___________________________\n");
+		int n = 10; 
+	printf("Enter 10 elements\n");
+	for(int i=0;i<n;i++)
+	{
+	scanf("%d",&a[i]);
+	}
+	for(int i=0;i<5;i++)
+	{
+	c[i]=a[i];
+	}
+	  printf("\n||2nd Sorted Subarray is||\n ");
+		pthread_t t1,t2,t3;
+		pthread_create(&t1, NULL,func, (void *)c);
+ 	pthread_join( t1,NULL);
+      for(int i=0;i<5;i++)
+ 	{
+ 	printf("%d",c[i]);
+ 	printf(" ");
+ 	}
+  	printf("\n");
+ 	for(int i=0;i<5;i++)
+	{
+		c[i]=a[i+5];
+	}
+ 	pthread_create(&t2, NULL, func, (void *)c);
+ pthread_join( t2,NULL);
+     for(int i=0;i<5;i++)
+ 	{
+	 printf("%d ",c[i]);
+	 printf(" ");
+	 }
+ printf("\n");
+ 	pthread_create(&t3, NULL, func1, (void *)a);
+ pthread_join( t3,NULL);
+ printf("~~Sorted Array After Merge Sort is~~\n");
+  for(int i = 0; i <=h; i++)
+      printf("%d ", a[i]);
+}
+void *func(void *c)
+{
+	mergesort1(l,h1);
+}
+void *func1(void *array_ptr)
+{
+	mergesort(l,h);
+}
